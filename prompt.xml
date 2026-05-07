@@ -1,0 +1,102 @@
+<project>
+  <name>PolitiqueAi</name>
+  <description>
+    Plateforme web moderne d'évaluation de discours politiques utilisant l'intelligence artificielle.
+    L'interface doit être en français uniquement avec une orthographe parfaite.
+  </description>
+
+  <tech_stack>
+    <frontend>Next.js (React, App Router)</frontend>
+    <backend>Supabase (PostgreSQL + Auth + Edge Functions)</backend>
+    <deployment>Vercel</deployment>
+    <testing>Jest + React Testing Library</testing>
+  </tech_stack>
+
+  <design>
+    <style>Minimaliste, moderne, responsive</style>
+    <ui_framework>Tailwind CSS</ui_framework>
+  </design>
+
+  <constraints>
+    <language>Français uniquement</language>
+    <responsive>true</responsive>
+    <clean_code>true</clean_code>
+    <test_coverage>required</test_coverage>
+  </constraints>
+
+  <features>
+
+    <landing_page>
+      Présentation moderne avec image d’un politicien en discours.
+      Affichage des packs :
+      - Pack Simple : 2000 DA, 3 discours / 1 mois
+      - Pack Premium : 7000 DA, 20 discours / 3 mois + reformulation
+      Footer : Réalisé pour le PFE Startup - Master - UABT - Par "Hind Chohra"
+    </landing_page>
+
+    <authentication>
+      Inscription : Nom, Prénom, Fonction, Email, Téléphone
+      Login : Email + mot de passe
+      Mot de passe oublié
+    </authentication>
+
+    <customer>
+      Mes discours :
+        - Liste avec colonnes : Nom, Statut, Date, Nb
+        - Bouton "Nouveau discours"
+        - Infos abonnement (quota restant + date fin)
+
+      Edition discours :
+        - Nom
+        - Contenu WYSIWYG minimal
+        - Compteur caractères
+        - Boutons : Sauvegarder / Demander évaluation
+
+      Evaluation :
+        - Résultat AI (lecture seule)
+        - Reformulation (lecture seule)
+    </customer>
+
+    <admin>
+      Gestion discours :
+        - Liste globale avec client
+        - Relancer évaluation IA
+
+      Gestion utilisateurs :
+        - Activer/désactiver
+        - Reset mot de passe
+        - Voir quotas
+
+      Configuration IA :
+        - API Key
+        - Prompt évaluation
+        - Prompt reformulation
+        - Prix packs
+    </admin>
+
+  </features>
+
+  <database>
+    Tables Supabase :
+    Users, Subscription, Discours, PlatformConfiguration
+  </database>
+
+  <rules>
+    - Customer : accès uniquement à ses discours
+    - Discours non éditable après soumission
+    - Admin : accès global mais ne modifie pas contenu
+  </rules>
+
+  <jobs>
+    Cron : désactiver abonnement expiré
+  </jobs>
+
+  <deliverables>
+    - Code complet Next.js
+    - Schéma SQL Supabase
+    - API routes
+    - Tests unitaires
+    - UI complète
+  </deliverables>
+
+</project>
