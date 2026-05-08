@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -15,7 +15,7 @@ const STATS = [
   { valeur: '< 60 s', libelle: 'par analyse' },
 ]
 
-export default function PageConnexion() {
+function ContenuConnexion() {
   const router = useRouter()
   const params = useSearchParams()
   const [email, setEmail]             = useState('')
@@ -220,5 +220,13 @@ export default function PageConnexion() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PageConnexion() {
+  return (
+    <Suspense>
+      <ContenuConnexion />
+    </Suspense>
   )
 }
