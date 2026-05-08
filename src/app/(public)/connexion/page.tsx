@@ -61,12 +61,11 @@ function ContenuConnexion() {
       <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
         {/* Photo */}
         <Image
-          src="https://images.unsplash.com/photo-1541872705-1f73c6400ec9?w=1400&q=80"
+          src="/politicien.png"
           alt="Politicien donnant un discours"
           fill
           className="object-cover object-center"
           priority
-          unoptimized
         />
 
         {/* Dégradé sombre */}
