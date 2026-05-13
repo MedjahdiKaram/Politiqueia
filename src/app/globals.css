@@ -5,6 +5,13 @@
 @layer base {
   :root {
     --font-sans: 'Inter', system-ui, sans-serif;
+
+    /* Idéoscope — variables de marque */
+    --brand-primary:   #2563eb;   /* bleu intellectuel */
+    --brand-alert:     #f97316;   /* orange d'alerte   */
+    --brand-analyse:   #16a34a;   /* vert de croissance */
+    --brand-neutral:   #f1f5f9;   /* gris clair         */
+    --brand-navy:      #0d1f3c;   /* sidebar            */
   }
 
   html {
@@ -13,87 +20,90 @@
   }
 
   body {
-    @apply bg-zinc-50 text-zinc-900;
+    @apply bg-slate-50 text-slate-900;
   }
 
-  /* Personnalisation scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-zinc-300;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-zinc-400;
-  }
+  /* Scrollbar */
+  ::-webkit-scrollbar        { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track  { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb  { @apply rounded-full bg-slate-300; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
 }
 
 @layer components {
-  /* Éditeur WYSIWYG */
+  /* Éditeur de corpus */
   .editeur-contenu {
-    @apply min-h-[300px] w-full rounded-lg border border-zinc-200 bg-white p-4 text-sm text-zinc-900 focus:border-zinc-400 focus:outline-none;
+    @apply min-h-[300px] w-full rounded-lg border border-slate-200 bg-white p-4
+           text-sm text-slate-900 focus:border-blue-400 focus:outline-none;
   }
-
   .editeur-contenu [contenteditable] {
     @apply min-h-[250px] outline-none;
   }
 
-  /* Résultat évaluation IA */
+  /* Résultat analyse IA */
   .evaluation-ia {
-    @apply space-y-4 text-sm text-zinc-700;
+    @apply space-y-4 text-sm text-slate-700;
   }
-
   .evaluation-ia h4 {
-    @apply font-semibold text-zinc-900 text-sm mt-4 mb-2;
+    @apply font-semibold text-slate-900 text-sm mt-4 mb-2;
   }
-
   .evaluation-ia ul {
     @apply space-y-1 pl-4;
   }
-
   .evaluation-ia li {
     @apply relative pl-2 before:absolute before:left-0 before:content-['–'];
   }
-
   .evaluation-ia .scores {
-    @apply flex gap-4 pt-4 border-t border-zinc-100;
+    @apply flex gap-4 pt-4 border-t border-slate-100;
   }
-
   .evaluation-ia .scores span {
-    @apply text-xs font-medium text-zinc-500;
+    @apply text-xs font-medium text-slate-500;
   }
 
   /* Reformulation IA */
   .reformulation-ia {
-    @apply space-y-4 text-sm text-zinc-700;
+    @apply space-y-4 text-sm text-slate-700;
   }
-
   .reformulation-ia h4 {
-    @apply font-semibold text-zinc-900 text-sm mb-2;
+    @apply font-semibold text-slate-900 text-sm mb-2;
   }
-
   .reformulation-ia .recommandation {
-    @apply rounded-lg bg-zinc-50 p-3 border border-zinc-200;
+    @apply rounded-lg bg-blue-50 p-3 border border-blue-100;
   }
-
   .reformulation-ia .recommandation strong {
-    @apply text-xs font-semibold uppercase tracking-wider text-zinc-500 block mb-1;
+    @apply text-xs font-semibold uppercase tracking-wider text-blue-600 block mb-1;
   }
 
-  /* Barre d'outils WYSIWYG */
+  /* Barre d'outils éditeur */
   .barre-outils-editeur {
-    @apply flex items-center gap-1 border-b border-zinc-200 p-2;
+    @apply flex items-center gap-1 border-b border-slate-200 p-2;
   }
-
   .barre-outils-editeur button {
-    @apply rounded p-1.5 text-zinc-600 hover:bg-zinc-100 transition-colors;
+    @apply rounded p-1.5 text-slate-600 hover:bg-slate-100 transition-colors;
+  }
+  .barre-outils-editeur button.actif {
+    @apply bg-blue-50 text-blue-700;
   }
 
-  .barre-outils-editeur button.actif {
-    @apply bg-zinc-100 text-zinc-900;
+  /* ── Hero Idéoscope ───────────────────────────────────────── */
+  .hero-discursif {
+    background-color: #0d1f3c;
+  }
+
+  .hero-halo-central {
+    background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+    opacity: 0.06;
+  }
+
+  .hero-grille {
+    background-image:
+      linear-gradient(#3b82f6 1px, transparent 1px),
+      linear-gradient(90deg, #3b82f6 1px, transparent 1px);
+    background-size: 52px 52px;
+  }
+
+  /* ── Section tarifs fond navy (page d'accueil) ────────────── */
+  .section-tarifs-navy {
+    background-color: #0d1f3c;
   }
 }

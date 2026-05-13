@@ -2,11 +2,13 @@
 
 import { useState, FormEvent } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { creerClientSupabase } from '@/lib/supabase/client'
 import Bouton from '@/components/ui/Bouton'
+import LinkBouton from '@/components/ui/LinkBouton'
 import ChampSaisie from '@/components/ui/ChampSaisie'
-import { Building2, Scale, FileText } from 'lucide-react'
+import { BookOpen, FlaskConical, Globe } from 'lucide-react'
 
 export default function PageInscription() {
   const router = useRouter()
@@ -56,11 +58,11 @@ export default function PageInscription() {
       })
 
       if (error) {
-        if (error.message.includes('already registered')) {
-          setErreur('Cette adresse email est déjà associée à un compte.')
-        } else {
-          setErreur(error.message)
-        }
+        setErreur(
+          error.message.includes('already registered')
+            ? 'Cette adresse email est déjà associée à un compte.'
+            : error.message
+        )
         return
       }
 
@@ -74,41 +76,50 @@ export default function PageInscription() {
 
   if (succes) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-        <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-10 text-center shadow-sm">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
             <span className="text-2xl">✓</span>
           </div>
-          <h2 className="text-xl font-bold text-zinc-900">Compte créé avec succès !</h2>
-          <p className="mt-3 text-sm text-zinc-500">
+          <h2 className="text-xl font-bold text-slate-900">Compte créé avec succès !</h2>
+          <p className="mt-3 text-sm text-slate-500">
             Un email de confirmation vous a été envoyé à{' '}
-            <strong>{formulaire.email}</strong>. Cliquez sur le lien pour activer votre compte.
+            <strong>{formulaire.email}</strong>. Cliquez sur le lien pour activer votre accès.
           </p>
-          <Link
+          <LinkBouton
             href="/connexion"
-            className="mt-6 inline-block rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            variante="primaire"
+            taille="md"
+            className="mt-6 px-6"
           >
             Retour à la connexion
-          </Link>
+          </LinkBouton>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 py-12">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 py-12">
       <div className="w-full max-w-md">
+
         {/* En-tête */}
         <div className="mb-8 text-center">
-          <Link href="/" className="text-xl font-bold text-zinc-900">
-            Politiqueia
+          <Link href="/">
+            <Image
+              src="/Logo_ideoscole_with_tagline.png"
+              alt="Idéoscope"
+              width={180}
+              height={54}
+              className="object-contain mx-auto"
+            />
           </Link>
-          <p className="mt-2 text-sm text-zinc-500">
-            Créez votre compte pour accéder à l&apos;expertise politique.
+          <p className="mt-3 text-sm text-slate-500">
+            Créez votre accès à la plateforme d&apos;analyse discursive.
           </p>
         </div>
 
-        <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           {erreur && (
             <div className="mb-6 rounded-lg bg-red-50 border border-red-200 px-4 py-3">
               <p className="text-sm text-red-600">{erreur}</p>
@@ -116,7 +127,6 @@ export default function PageInscription() {
           )}
 
           <form onSubmit={gererSoumission} className="space-y-4">
-            {/* Prénom + Nom */}
             <div className="grid grid-cols-2 gap-4">
               <ChampSaisie
                 libelle="Prénom"
@@ -139,20 +149,20 @@ export default function PageInscription() {
             </div>
 
             <ChampSaisie
-              libelle="Fonction"
+              libelle="Fonction / Affiliation"
               type="text"
               value={formulaire.fonction}
               onChange={mettreAJour('fonction')}
-              placeholder="Analyste, Journaliste, Collaborateur..."
+              placeholder="Chercheur, Doctorant, Analyste..."
               required
             />
 
             <ChampSaisie
-              libelle="Email professionnel"
+              libelle="Email institutionnel"
               type="email"
               value={formulaire.email}
               onChange={mettreAJour('email')}
-              placeholder="jean.dupont@institution.fr"
+              placeholder="jean.dupont@universite.fr"
               required
               autoComplete="email"
             />
@@ -185,29 +195,23 @@ export default function PageInscription() {
               iconDroite={!chargement ? <span>→</span> : undefined}
               className="mt-2"
             >
-              S&apos;inscrire
+              Créer mon accès
             </Bouton>
 
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-200" />
-              </div>
-            </div>
-
-            <p className="text-center text-sm text-zinc-500">
+            <p className="text-center text-sm text-slate-500">
               Vous avez déjà un compte ?{' '}
-              <Link href="/connexion" className="font-semibold text-zinc-900 hover:underline">
+              <Link href="/connexion" className="font-semibold text-blue-600 hover:underline">
                 Se connecter
               </Link>
             </p>
           </form>
         </div>
 
-        {/* Icônes domaines */}
-        <div className="mt-8 flex justify-center gap-12 text-zinc-300">
-          <Building2 className="h-8 w-8" />
-          <Scale className="h-8 w-8" />
-          <FileText className="h-8 w-8" />
+        {/* Publics */}
+        <div className="mt-8 flex justify-center gap-10 text-slate-300">
+          <BookOpen className="h-7 w-7" />
+          <FlaskConical className="h-7 w-7" />
+          <Globe className="h-7 w-7" />
         </div>
       </div>
     </div>

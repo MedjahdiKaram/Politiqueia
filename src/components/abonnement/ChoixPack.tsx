@@ -16,7 +16,7 @@ type TypePack = 'simple' | 'premium'
 
 const MESSAGES_RAISON: Record<PropsChoixPack['raison'], { titre: string; description: string }> = {
   nouveau: {
-    titre: 'Bienvenue sur Politiqueia !',
+    titre: 'Bienvenue sur Idéoscope !',
     description: 'Choisissez un forfait pour commencer à analyser vos discours politiques.',
   },
   expire: {
@@ -47,12 +47,12 @@ export default function ChoixPack({ config, raison }: PropsChoixPack) {
   const packs = [
     {
       type: 'simple' as TypePack,
-      titre: 'Pack Simple',
+      titre: 'Accès Essentiel',
       prix: prixSimple,
       quota: quotaSimple,
       duree: dureeSimple,
       features: [
-        `${quotaSimple} discours analysés`,
+        `${quotaSimple} corpus analysés`,
         'Analyse IA complète',
         'Score de persuasion et de clarté',
         'Points forts et axes d\'amélioration',
@@ -63,12 +63,12 @@ export default function ChoixPack({ config, raison }: PropsChoixPack) {
     },
     {
       type: 'premium' as TypePack,
-      titre: 'Pack Premium',
+      titre: 'Accès Recherche',
       prix: prixPremium,
       quota: quotaPremium,
       duree: dureePremium,
       features: [
-        `${quotaPremium} discours analysés`,
+        `${quotaPremium} corpus analysés`,
         'Analyse IA approfondie',
         'Score de persuasion et de clarté',
         'Points forts et axes d\'amélioration',
@@ -140,8 +140,8 @@ export default function ChoixPack({ config, raison }: PropsChoixPack) {
                 relative text-left rounded-2xl border-2 p-7 transition-all cursor-pointer
                 ${pack.premium
                   ? estSelectionne
-                    ? 'border-zinc-900 bg-zinc-950 text-white ring-4 ring-zinc-900/20'
-                    : 'border-zinc-700 bg-zinc-950 text-white hover:border-zinc-900'
+                    ? 'border-blue-600 bg-blue-700 text-white ring-4 ring-blue-600/20'
+                    : 'border-blue-500 bg-blue-600 text-white hover:border-blue-600'
                   : estSelectionne
                     ? 'border-zinc-900 bg-white ring-4 ring-zinc-900/10'
                     : 'border-zinc-200 bg-white hover:border-zinc-400'
@@ -206,7 +206,7 @@ export default function ChoixPack({ config, raison }: PropsChoixPack) {
           className={!selectionne ? 'opacity-50 cursor-not-allowed' : ''}
         >
           {selectionne
-            ? `Activer le ${selectionne === 'premium' ? 'Pack Premium' : 'Pack Simple'}`
+            ? `Activer l&apos;${selectionne === 'premium' ? 'Accès Recherche' : 'Accès Essentiel'}`
             : 'Sélectionnez un forfait'}
         </Bouton>
         <p className="mt-3 text-center text-xs text-zinc-400">

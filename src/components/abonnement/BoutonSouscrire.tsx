@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Bouton from '@/components/ui/Bouton'
 
 interface PropsBoutonSouscrire {
   typePack: 'simple' | 'premium'
@@ -44,18 +45,17 @@ export default function BoutonSouscrire({ typePack, estPremium = false }: PropsB
           {erreur}
         </p>
       )}
-      <button
+      <Bouton
         type="button"
         onClick={souscrire}
-        disabled={chargement}
-        className={`flex w-full items-center justify-center rounded-lg py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-          estPremium
-            ? 'bg-white text-zinc-900 hover:bg-zinc-100'
-            : 'border border-zinc-200 text-zinc-900 hover:bg-zinc-50'
-        }`}
+        chargement={chargement}
+        pleineLargeur
+        variante={estPremium ? 'secondaire' : 'contour'}
+        taille="md"
+        className={estPremium ? 'font-semibold text-blue-700 hover:bg-blue-50' : ''}
       >
-        {chargement ? 'Activation…' : 'Souscrire'}
-      </button>
+        Souscrire
+      </Bouton>
     </div>
   )
 }

@@ -1,31 +1,43 @@
-import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
+import LinkBouton from '@/components/ui/LinkBouton'
 
 export default function PageIntrouvable() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+        <Image
+          src="/Logo_ideoscole.png"
+          alt="Idéoscope"
+          width={130}
+          height={38}
+          className="object-contain mx-auto mb-8"
+        />
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">
           Erreur 404
         </p>
-        <h1 className="text-4xl font-bold text-zinc-900">Page introuvable</h1>
-        <p className="mt-4 text-zinc-500 max-w-sm mx-auto">
+        <h1 className="text-4xl font-bold text-slate-900">Page introuvable</h1>
+        <p className="mt-4 text-slate-500 max-w-sm mx-auto">
           La page que vous recherchez n&apos;existe pas ou a été déplacée.
         </p>
         <div className="mt-8 flex justify-center gap-4">
-          <Link
+          <LinkBouton
             href="/"
-            className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+            variante="primaire"
+            taille="md"
+            className="px-5"
+            iconGauche={<ArrowLeft className="h-4 w-4" />}
           >
-            <ArrowLeft className="h-4 w-4" />
             Retour à l&apos;accueil
-          </Link>
-          <Link
+          </LinkBouton>
+          <LinkBouton
             href="/tableau-de-bord"
-            className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-5 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+            variante="contour"
+            taille="md"
+            className="px-5"
           >
             Tableau de bord
-          </Link>
+          </LinkBouton>
         </div>
       </div>
     </div>

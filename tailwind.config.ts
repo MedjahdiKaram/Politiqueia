@@ -12,26 +12,60 @@ const config: Config = {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // ── Idéoscope brand palette ──────────────────────────────
+        brand: {
+          // Bleu intellectuel (sérieux, connaissance)
+          50:  '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#0d1f3c',   // sidebar navy
+        },
+        alert: {
+          // Orange d'alerte (polarisation, tension)
+          50:  '#fff7ed',
+          100: '#ffedd5',
+          400: '#fb923c',
+          500: '#f97316',
+          600: '#ea580c',
+          700: '#c2410c',
+        },
+        analyse: {
+          // Vert de croissance (compréhension, analyse)
+          50:  '#f0fdf4',
+          100: '#dcfce7',
+          500: '#22c55e',
+          600: '#16a34a',
+          700: '#15803d',
+        },
+        // Sidebar spécifique
         sidebar: {
-          DEFAULT: '#0f0f0f',
-          hover: '#1a1a1a',
-          active: '#262626',
-          text: '#a3a3a3',
+          DEFAULT:      '#0d1f3c',
+          hover:        '#162d54',
+          active:       '#1e3a5f',
+          accent:       '#3b82f6',
+          text:         '#94a3b8',
           'text-active': '#ffffff',
         },
       },
       animation: {
-        'fade-in': 'fadeIn 0.2s ease-in-out',
+        'fade-in':  'fadeIn 0.2s ease-in-out',
         'slide-in': 'slideIn 0.2s ease-out',
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
+          '0%':   { opacity: '0' },
           '100%': { opacity: '1' },
         },
         slideIn: {
-          '0%': { transform: 'translateX(-10px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
+          '0%':   { transform: 'translateX(-10px)', opacity: '0' },
+          '100%': { transform: 'translateX(0)',      opacity: '1' },
         },
       },
     },

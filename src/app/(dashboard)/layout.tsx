@@ -24,7 +24,7 @@ export default async function LayoutTableauBord({
   if (!profil.actif) redirect('/connexion?erreur=compte-desactive')
 
   return (
-    <div className="flex min-h-screen bg-zinc-50">
+    <div className="flex min-h-screen bg-slate-50">
       <ClientDeconnexion profil={profil} />
       <main className="ml-56 flex-1 flex flex-col min-h-screen">
         {children}

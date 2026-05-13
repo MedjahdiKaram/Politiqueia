@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { FilePlus, TrendingUp, Clock, CheckCircle } from 'lucide-react'
+import LinkBouton from '@/components/ui/LinkBouton'
 import { creerClientServeur, creerClientAdmin } from '@/lib/supabase/server'
 import { abonnementEstValide } from '@/lib/abonnement'
 import { BadgeStatut } from '@/components/ui/Badge'
@@ -62,36 +63,37 @@ export default async function PageTableauBord() {
         {/* En-tête */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900">Mes discours</h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              Gérez et suivez vos analyses de discours institutionnels.
+            <h1 className="text-2xl font-bold text-slate-900">Mes corpus</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Gérez et suivez vos analyses de corpus discursifs.
             </p>
           </div>
           <div className="flex items-center gap-6">
             {ab && (
               <div className="text-right">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider">Discours restants</p>
-                <p className="text-2xl font-bold text-zinc-900">
+                <p className="text-xs text-slate-500 uppercase tracking-wider">Corpus restants</p>
+                <p className="text-2xl font-bold text-slate-900">
                   {ab.quota_restant}{' '}
-                  <span className="text-base font-normal text-zinc-400">/ {ab.quota_total}</span>
+                  <span className="text-base font-normal text-slate-400">/ {ab.quota_total}</span>
                 </p>
               </div>
             )}
             {ab && (
               <div className="text-right">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider">Fin du pack</p>
-                <p className="text-base font-semibold text-zinc-900">
+                <p className="text-xs text-slate-500 uppercase tracking-wider">Fin du pack</p>
+                <p className="text-base font-semibold text-slate-900">
                   {formaterDateCourte(ab.date_fin)}
                 </p>
               </div>
             )}
-            <Link
+            <LinkBouton
               href="/discours/nouveau"
-              className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+              variante="primaire"
+              taille="md"
+              iconGauche={<FilePlus className="h-4 w-4" />}
             >
-              <FilePlus className="h-4 w-4" />
-              Nouveau discours
-            </Link>
+              Nouveau corpus
+            </LinkBouton>
           </div>
         </div>
 
@@ -99,12 +101,12 @@ export default async function PageTableauBord() {
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Carte>
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-zinc-100 p-2.5">
-                <CheckCircle className="h-5 w-5 text-zinc-600" />
+              <div className="rounded-lg bg-slate-100 p-2.5">
+                <CheckCircle className="h-5 w-5 text-slate-600" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Analyses terminées</p>
-                <p className="text-2xl font-bold text-zinc-900">{nbAnalyses}</p>
+                <p className="text-xs text-slate-500">Analyses terminées</p>
+                <p className="text-2xl font-bold text-slate-900">{nbAnalyses}</p>
               </div>
             </div>
           </Carte>
@@ -114,19 +116,19 @@ export default async function PageTableauBord() {
                 <Clock className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">En cours de traitement</p>
-                <p className="text-2xl font-bold text-zinc-900">{nbEnCours}</p>
+                <p className="text-xs text-slate-500">En cours de traitement</p>
+                <p className="text-2xl font-bold text-slate-900">{nbEnCours}</p>
               </div>
             </div>
           </Carte>
           <Carte>
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-zinc-100 p-2.5">
-                <TrendingUp className="h-5 w-5 text-zinc-600" />
+              <div className="rounded-lg bg-slate-100 p-2.5">
+                <TrendingUp className="h-5 w-5 text-slate-600" />
               </div>
               <div>
-                <p className="text-xs text-zinc-500">Total discours</p>
-                <p className="text-2xl font-bold text-zinc-900">{listeDiscours.length}</p>
+                <p className="text-xs text-slate-500">Total corpus</p>
+                <p className="text-2xl font-bold text-slate-900">{listeDiscours.length}</p>
               </div>
             </div>
           </Carte>
@@ -136,8 +138,8 @@ export default async function PageTableauBord() {
         {ab && (
           <Carte className="mb-8">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-zinc-900">Quota d&apos;abonnement</h2>
-              <span className="text-xs text-zinc-500">
+              <h2 className="font-semibold text-slate-900">Quota d&apos;abonnement</h2>
+              <span className="text-xs text-slate-500">
                 Expire le {formaterDateCourte(ab.date_fin)}
                 {ab.est_expire && (
                   <span className="ml-2 text-red-500 font-medium">· Expiré</span>
@@ -157,8 +159,8 @@ export default async function PageTableauBord() {
         {/* Liste des discours récents */}
         <Carte rembourrement={false}>
           <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
-            <h2 className="font-semibold text-zinc-900">Historique des analyses</h2>
-            <Link href="/discours" className="text-xs text-zinc-500 hover:text-zinc-900">
+            <h2 className="font-semibold text-slate-900">Historique des corpus</h2>
+            <Link href="/discours" className="text-xs text-slate-500 hover:text-slate-900">
               Voir tout →
             </Link>
           </div>
@@ -167,20 +169,22 @@ export default async function PageTableauBord() {
             <div className="px-6 py-16 text-center">
               <FilePlus className="mx-auto h-10 w-10 text-zinc-300" />
               <p className="mt-3 font-medium text-zinc-700">Aucun discours pour le moment</p>
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-slate-400">
                 Commencez par créer votre première analyse.
               </p>
-              <Link
+              <LinkBouton
                 href="/discours/nouveau"
-                className="mt-4 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+                variante="primaire"
+                taille="sm"
+                className="mt-4"
               >
                 Créer un discours
-              </Link>
+              </LinkBouton>
             </div>
           ) : (
             <div className="divide-y divide-zinc-50">
               {/* En-tête tableau */}
-              <div className="grid grid-cols-12 gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">
+              <div className="grid grid-cols-12 gap-4 px-6 py-3 text-xs font-medium uppercase tracking-wider text-slate-400">
                 <span className="col-span-5">Nom du discours</span>
                 <span className="col-span-2">Statut</span>
                 <span className="col-span-3">Dernière modification</span>
@@ -194,7 +198,7 @@ export default async function PageTableauBord() {
                   <div className="col-span-5">
                     <Link
                       href={`/discours/${d.id}`}
-                      className="font-medium text-zinc-900 hover:underline text-sm"
+                      className="font-medium text-slate-900 hover:underline text-sm"
                     >
                       {d.nom}
                     </Link>
@@ -202,13 +206,13 @@ export default async function PageTableauBord() {
                   <div className="col-span-2">
                     <BadgeStatut statut={d.statut} />
                   </div>
-                  <div className="col-span-3 text-sm text-zinc-500">
+                  <div className="col-span-3 text-sm text-slate-500">
                     {formaterDateCourte(d.updated_at)}
                   </div>
                   <div className="col-span-2 flex justify-end">
                     <Link
                       href={`/discours/${d.id}`}
-                      className="rounded px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"
+                      className="rounded px-2 py-1 text-xs text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                     >
                       Voir →
                     </Link>
@@ -221,19 +225,20 @@ export default async function PageTableauBord() {
 
         {/* Bannière aide */}
         {!ab && (
-          <div className="mt-8 rounded-xl bg-zinc-950 text-white p-6 flex items-center justify-between">
+          <div className="mt-8 rounded-xl bg-slate-900 text-white p-6 flex items-center justify-between">
             <div>
-              <p className="font-semibold">Optimisez votre prochain discours</p>
-              <p className="mt-1 text-sm text-zinc-400">
-                Souscrivez à un abonnement pour accéder aux analyses IA.
+              <p className="font-semibold">Accédez à l&apos;analyse discursive complète</p>
+              <p className="mt-1 text-sm text-slate-400">
+                Souscrivez à un forfait pour accéder aux analyses discursives.
               </p>
             </div>
-            <Link
+            <LinkBouton
               href="/abonnement"
-              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
+              variante="secondaire"
+              taille="sm"
             >
               Voir les offres
-            </Link>
+            </LinkBouton>
           </div>
         )}
       </div>

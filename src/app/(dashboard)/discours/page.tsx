@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { FilePlus } from 'lucide-react'
+import LinkBouton from '@/components/ui/LinkBouton'
 import { creerClientServeur, creerClientAdmin } from '@/lib/supabase/server'
 import { BadgeStatut } from '@/components/ui/Badge'
 import { Carte } from '@/components/ui/Carte'
@@ -65,28 +66,29 @@ export default async function PageDiscours() {
         {/* En-tête */}
         <div className="mb-6 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900">
+            <h1 className="text-2xl font-bold text-slate-900">
               {estAdmin ? 'Tous les discours' : 'Mes discours'}
             </h1>
             {estAdmin ? (
-              <p className="mt-1 text-sm text-zinc-500">
+              <p className="mt-1 text-sm text-slate-500">
                 Vue administrateur — {liste.length} discours sur la plateforme
               </p>
             ) : ab ? (
-              <p className="mt-1 text-sm text-zinc-500">
+              <p className="mt-1 text-sm text-slate-500">
                 {ab.quota_restant} discours restants · Fin du pack le{' '}
                 {formaterDateCourte(ab.date_fin)}
               </p>
             ) : null}
           </div>
           {!estAdmin && (
-            <Link
+            <LinkBouton
               href="/discours/nouveau"
-              className="flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
+              variante="primaire"
+              taille="md"
+              iconGauche={<FilePlus className="h-4 w-4" />}
             >
-              <FilePlus className="h-4 w-4" />
               Nouveau discours
-            </Link>
+            </LinkBouton>
           )}
         </div>
 
@@ -94,7 +96,7 @@ export default async function PageDiscours() {
         <Carte rembourrement={false}>
           {/* En-têtes */}
           <div className="px-6 py-3 border-b border-zinc-100">
-            <div className={`grid gap-4 text-xs font-medium uppercase tracking-wider text-zinc-400 ${estAdmin ? 'grid-cols-12' : 'grid-cols-12'}`}>
+            <div className={`grid gap-4 text-xs font-medium uppercase tracking-wider text-slate-400 ${estAdmin ? 'grid-cols-12' : 'grid-cols-12'}`}>
               <span className={estAdmin ? 'col-span-3' : 'col-span-5'}>Nom du discours</span>
               {estAdmin && (
                 <span className="col-span-2">Utilisateur</span>
@@ -109,18 +111,20 @@ export default async function PageDiscours() {
             <div className="px-6 py-16 text-center">
               <FilePlus className="mx-auto h-10 w-10 text-zinc-300" />
               <p className="mt-3 font-medium text-zinc-700">Aucun discours</p>
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm text-slate-400">
                 {estAdmin
                   ? 'Aucun discours sur la plateforme pour le moment.'
                   : "Créez votre premier discours pour commencer l'analyse."}
               </p>
               {!estAdmin && (!ab || ab.quota_restant > 0) && (
-                <Link
+                <LinkBouton
                   href="/discours/nouveau"
-                  className="mt-4 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+                  variante="primaire"
+                  taille="sm"
+                  className="mt-4"
                 >
                   Créer un discours
-                </Link>
+                </LinkBouton>
               )}
             </div>
           ) : (
@@ -134,7 +138,7 @@ export default async function PageDiscours() {
                   <div className={estAdmin ? 'col-span-3' : 'col-span-5'}>
                     <Link
                       href={`/discours/${d.id}`}
-                      className="font-medium text-zinc-900 hover:underline text-sm block truncate"
+                      className="font-medium text-slate-900 hover:underline text-sm block truncate"
                     >
                       {d.nom}
                     </Link>
@@ -153,7 +157,7 @@ export default async function PageDiscours() {
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-zinc-400">–</span>
+                        <span className="text-xs text-slate-400">–</span>
                       )}
                     </div>
                   )}
@@ -164,7 +168,7 @@ export default async function PageDiscours() {
                   </div>
 
                   {/* Date */}
-                  <div className="col-span-3 text-sm text-zinc-500">
+                  <div className="col-span-3 text-sm text-slate-500">
                     {formaterDateCourte(d.updated_at)}
                   </div>
 
@@ -172,7 +176,7 @@ export default async function PageDiscours() {
                   <div className="col-span-2 flex justify-end gap-2">
                     <Link
                       href={`/discours/${d.id}`}
-                      className="rounded px-2.5 py-1 text-xs text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors border border-zinc-200"
+                      className="rounded px-2.5 py-1 text-xs text-slate-500 hover:bg-zinc-100 hover:text-slate-900 transition-colors border border-zinc-200"
                     >
                       Voir
                     </Link>
@@ -184,7 +188,7 @@ export default async function PageDiscours() {
 
           {liste.length > 0 && (
             <div className="px-6 py-3 border-t border-zinc-100">
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-slate-400">
                 {liste.length} discours affichés
               </p>
             </div>

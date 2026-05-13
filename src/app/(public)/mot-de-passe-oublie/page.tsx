@@ -41,7 +41,7 @@ export default function PageMotDePasseOublie() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <Link href="/" className="text-xl font-bold text-zinc-900">Politiqueia</Link>
+          <Link href="/" className="text-xl font-bold text-slate-900">Idéoscope</Link>
         </div>
 
         <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">

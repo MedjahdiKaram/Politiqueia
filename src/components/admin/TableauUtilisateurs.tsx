@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { UserPlus, Filter, RotateCcw, UserX, UserCheck, History } from 'lucide-react'
 import { Carte } from '@/components/ui/Carte'
 import { Badge } from '@/components/ui/Badge'
-import Bouton from '@/components/ui/Bouton'
+import Bouton, { SpinnerBouton } from '@/components/ui/Bouton'
+import LinkBouton from '@/components/ui/LinkBouton'
 import { formaterDateCourte, initiales } from '@/lib/utils'
 import type { StatsAdmin } from '@/types'
 
@@ -166,14 +167,15 @@ export default function TableauUtilisateurs({ utilisateurs, stats }: PropsTablea
                       </td>
                       {/* Bouton historique abonnements */}
                       <td className="px-4 py-3">
-                        <a
+                        <LinkBouton
                           href={`/admin/utilisateurs/${u.id}/abonnements`}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-2.5 py-1.5 text-xs font-medium text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-colors whitespace-nowrap"
-                          title="Voir l'historique des abonnements"
+                          variante="contour"
+                          taille="sm"
+                          iconGauche={<History className="h-3.5 w-3.5" />}
+                          className="whitespace-nowrap text-xs"
                         >
-                          <History className="h-3.5 w-3.5" />
                           Historique
-                        </a>
+                        </LinkBouton>
                       </td>
 
                       {/* Actions */}
@@ -185,7 +187,10 @@ export default function TableauUtilisateurs({ utilisateurs, stats }: PropsTablea
                             className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 transition-colors disabled:opacity-40"
                             title="Réinitialiser le mot de passe"
                           >
-                            <RotateCcw className="h-4 w-4" />
+                            {action === u.id
+                              ? <SpinnerBouton classe="text-zinc-400" />
+                              : <RotateCcw className="h-4 w-4" />
+                            }
                           </button>
                           <button
                             onClick={() => toggleActif(u.id, u.actif)}
@@ -193,7 +198,9 @@ export default function TableauUtilisateurs({ utilisateurs, stats }: PropsTablea
                             className="rounded p-1.5 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 transition-colors disabled:opacity-40"
                             title={u.actif ? 'Désactiver le compte' : 'Activer le compte'}
                           >
-                            {u.actif ? (
+                            {action === u.id ? (
+                              <SpinnerBouton classe="text-zinc-400" />
+                            ) : u.actif ? (
                               <UserX className="h-4 w-4" />
                             ) : (
                               <UserCheck className="h-4 w-4 text-green-600" />

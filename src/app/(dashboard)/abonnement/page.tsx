@@ -61,7 +61,7 @@ export default async function PageAbonnement() {
                   {ab.est_expire ? 'Expiré' : 'Actif'}
                 </Badge>
                 <h2 className="mt-2 text-lg font-bold text-zinc-900">
-                  {ab.type === 'premium' ? 'Pack Premium' : 'Pack Simple'}
+                  {ab.type === 'premium' ? 'Accès Recherche' : 'Accès Essentiel'}
                 </h2>
               </div>
               <div className="text-right">
@@ -87,7 +87,7 @@ export default async function PageAbonnement() {
           <div className="mb-6 rounded-xl border-2 border-dashed border-zinc-200 p-8 text-center">
             <p className="font-medium text-zinc-700">Aucun abonnement actif</p>
             <p className="mt-1 text-sm text-zinc-400">
-              Souscrivez à un forfait pour commencer à analyser vos discours.
+              Souscrivez à un forfait pour commencer à analyser vos corpus.
             </p>
           </div>
         )}
@@ -98,12 +98,12 @@ export default async function PageAbonnement() {
           {[
             {
               type:     'simple' as const,
-              titre:    'Pack Simple',
+              titre:    'Accès Essentiel',
               prix:     config?.prix_pack_simple  ?? 2000,
               quota:    config?.quota_pack_simple  ?? 3,
               duree:    `${config?.duree_pack_simple_mois  ?? 1} mois`,
               features: [
-                `${config?.quota_pack_simple ?? 3} discours analysés`,
+                `${config?.quota_pack_simple ?? 3} corpus analysés`,
                 'Analyse IA complète',
                 'Support standard',
               ],
@@ -111,12 +111,12 @@ export default async function PageAbonnement() {
             },
             {
               type:     'premium' as const,
-              titre:    'Pack Premium',
+              titre:    'Accès Recherche',
               prix:     config?.prix_pack_premium ?? 7000,
               quota:    config?.quota_pack_premium ?? 20,
               duree:    `${config?.duree_pack_premium_mois ?? 3} mois`,
               features: [
-                `${config?.quota_pack_premium ?? 20} discours analysés`,
+                `${config?.quota_pack_premium ?? 20} corpus analysés`,
                 'Analyse IA approfondie',
                 'Reformulation IA incluse',
                 'Support prioritaire',
@@ -128,7 +128,7 @@ export default async function PageAbonnement() {
               key={pack.type}
               className={`rounded-xl border p-6 ${
                 pack.type === 'premium'
-                  ? 'border-zinc-900 bg-zinc-950 text-white'
+                  ? 'border-blue-600 bg-blue-600 text-white'
                   : 'border-zinc-200'
               }`}
             >

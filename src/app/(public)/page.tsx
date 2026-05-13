@@ -1,245 +1,404 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle, Zap, Shield } from 'lucide-react'
-import { creerClientServeur } from '@/lib/supabase/server'
-import { formaterPrix } from '@/lib/utils'
-import type { ConfigurationPlateforme } from '@/types'
+import Image from 'next/image'
+import {
+  ArrowRight, CheckCircle, Microscope, Brain, Network,
+  BookOpen, FlaskConical, Globe, Building2, Users,
+  LayoutDashboard, UserCircle,
+} from 'lucide-react'
+import { creerClientServeur, creerClientAdmin } from '@/lib/supabase/server'
+import { formaterPrix, enrichirAbonnement, initiales } from '@/lib/utils'
+import type { Abonnement, ConfigurationPlateforme, Profil } from '@/types'
+import HeroDiscursif from '@/components/hero/HeroDiscursif'
+import LinkBouton from '@/components/ui/LinkBouton'
 
-export const metadata: Metadata = {
-  title: 'Accueil',
-}
+export const metadata: Metadata = { title: 'Accueil' }
 
 async function obtenirConfiguration(): Promise<ConfigurationPlateforme | null> {
   try {
     const supabase = await creerClientServeur()
-    const { data } = await supabase
-      .from('configuration_plateforme')
-      .select('*')
-      .single()
+    const { data } = await supabase.from('configuration_plateforme').select('*').single()
     return data
   } catch {
     return null
   }
 }
 
-export default async function PageAccueil() {
-  const config = await obtenirConfiguration()
+interface SessionUtilisateur {
+  profil: Profil
+  quotaRestant: number
+  quotaTotal: number
+  typeAbonnement: 'simple' | 'premium' | null
+}
 
-  const prixSimple  = config?.prix_pack_simple  ?? 2000
-  const prixPremium = config?.prix_pack_premium ?? 7000
+async function obtenirSession(): Promise<SessionUtilisateur | null> {
+  try {
+    const supabase      = await creerClientServeur()
+    const supabaseAdmin = await creerClientAdmin()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return null
+
+    const [{ data: profil }, { data: abonnement }] = await Promise.all([
+      supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single<Profil>(),
+      supabaseAdmin
+        .from('abonnements')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('actif', true)
+        .order('date_fin', { ascending: false })
+        .limit(1)
+        .single<Abonnement>(),
+    ])
+
+    if (!profil) return null
+    const ab = abonnement ? enrichirAbonnement(abonnement) : null
+
+    return {
+      profil,
+      quotaRestant: ab?.quota_restant ?? 0,
+      quotaTotal:   ab?.quota_total   ?? 0,
+      typeAbonnement: (ab?.type as 'simple' | 'premium') ?? null,
+    }
+  } catch {
+    return null
+  }
+}
+
+const PUBLICS = [
+  { icon: BookOpen,   label: 'Universités & Laboratoires' },
+  { icon: FlaskConical, label: 'Incubateurs & Pôles d\'innovation' },
+  { icon: Globe,      label: 'Observatoires politiques' },
+  { icon: Building2,  label: 'Cabinets de conseil stratégique' },
+  { icon: Users,      label: 'ONG & Institutions publiques' },
+  { icon: Network,    label: 'Colloques & Recherche académique' },
+]
+
+const FONCTIONNALITES = [
+  {
+    icon: Microscope,
+    couleur: 'bg-blue-50 text-blue-600',
+    titre: 'Analyse des stratégies discursives',
+    description:
+      'Notre moteur IA décompose chaque corpus en unités sémantiques pour identifier les procédés rhétoriques, les figures de style et les stratégies d\'argumentation mobilisées.',
+  },
+  {
+    icon: Brain,
+    couleur: 'bg-orange-50 text-orange-500',
+    titre: 'Détection des orientations idéologiques',
+    description:
+      'Quantification des tensions idéologiques et cartographie des positionnements discursifs. Idéoscope situe chaque corpus dans son spectre interprétatif.',
+  },
+  {
+    icon: Network,
+    couleur: 'bg-emerald-50 text-emerald-600',
+    titre: 'Interprétation contextualisée',
+    description:
+      'Approche hybride IA + sciences du langage (SHS) : les résultats sont mis en perspective avec le contexte institutionnel, médiatique et socio-politique.',
+  },
+]
+
+export default async function PageAccueil() {
+  const [config, session] = await Promise.all([
+    obtenirConfiguration(),
+    obtenirSession(),
+  ])
+
+  const prixSimple   = config?.prix_pack_simple   ?? 2000
+  const prixPremium  = config?.prix_pack_premium  ?? 7000
   const quotaSimple  = config?.quota_pack_simple  ?? 3
   const quotaPremium = config?.quota_pack_premium ?? 20
 
+  const connecte = session !== null
+  const jauge = connecte && session.quotaTotal > 0
+    ? Math.round((session.quotaRestant / session.quotaTotal) * 100)
+    : null
+
   return (
     <div className="bg-white">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-zinc-100 bg-white/95 backdrop-blur">
+
+      {/* ── Navigation ─────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <span className="text-lg font-bold text-zinc-900">Politiqueia</span>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/connexion"
-              className="rounded-lg px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100 transition-colors"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/inscription"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 transition-colors"
-            >
-              S&apos;inscrire
-            </Link>
-          </div>
+          <Link href="/">
+            <Image
+              src="/Logo_ideoscole.png"
+              alt="Idéoscope"
+              width={130}
+              height={36}
+              className="object-contain"
+              priority
+            />
+          </Link>
+
+          {connecte ? (
+            /* ── Utilisateur connecté ── */
+            <div className="flex items-center gap-3">
+              {/* Jauge quota */}
+              {jauge !== null && (
+                <div className="hidden sm:flex flex-col items-end gap-0.5 mr-1">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <span className="font-semibold text-slate-800">
+                      {session!.quotaRestant}
+                    </span>
+                    <span>/ {session!.quotaTotal} corpus</span>
+                    {session!.typeAbonnement && (
+                      <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
+                        session!.typeAbonnement === 'premium'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        {session!.typeAbonnement === 'premium' ? 'Recherche' : 'Essentiel'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="w-32 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${
+                        jauge === 0 ? 'bg-red-500'
+                        : jauge < 30 ? 'bg-orange-400'
+                        : 'bg-emerald-500'
+                      }`}
+                      style={{ width: `${jauge}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Lien tableau de bord */}
+              <LinkBouton
+                href="/tableau-de-bord"
+                variante="secondaire"
+                taille="sm"
+                iconGauche={<LayoutDashboard className="h-3.5 w-3.5" />}
+              >
+                Tableau de bord
+              </LinkBouton>
+
+              {/* Avatar / profil */}
+              <Link
+                href="/profil"
+                className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-700 hover:bg-slate-100 transition-colors"
+                title="Mon profil"
+              >
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white text-[11px] font-bold">
+                  {initiales(session!.profil.prenom, session!.profil.nom)}
+                </div>
+                <span className="hidden sm:inline text-sm font-medium text-slate-700">
+                  {session!.profil.prenom}
+                </span>
+                <UserCircle className="h-3.5 w-3.5 text-slate-400 sm:hidden" />
+              </Link>
+            </div>
+          ) : (
+            /* ── Visiteur ── */
+            <div className="flex items-center gap-2">
+              <LinkBouton href="/connexion" variante="fantome" taille="sm">
+                Connexion
+              </LinkBouton>
+              <LinkBouton href="/inscription" variante="primaire" taille="sm">
+                Inscription
+              </LinkBouton>
+            </div>
+          )}
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-zinc-950 text-white">
-        {/* Image d'arrière-plan */}
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1600&q=80')" }}
-          aria-hidden="true"
-        />
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-              Plateforme d&apos;analyse politique
-            </p>
-            <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
-              Évaluation de discours{' '}
-              <span className="text-zinc-300">politique assistée</span>
-              {' '}par IA
-            </h1>
-            <p className="mt-6 text-lg text-zinc-400 leading-relaxed">
-              Décryptez l&apos;impact de votre communication politique grâce à notre
-              analyse rhétorique. Politiqueia évalue votre discours, identifie
-              vos forces et vous propose des reformulations optimisées.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href="/inscription"
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
-              >
-                Commencer l&apos;analyse
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="#tarifs"
-                className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-6 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-900 transition-colors"
-              >
-                Voir les tarifs
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── Hero ───────────────────────────────────────────────── */}
+      <HeroDiscursif />
 
-      {/* Fonctionnalités */}
-      <section className="py-20 bg-zinc-50">
+      {/* ── Publics cibles ─────────────────────────────────────── */}
+      <section className="py-14 border-b border-slate-100 bg-slate-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl font-bold text-zinc-900">
-              Analyse de Clarté et d&apos;Impact
-            </h2>
-            <p className="mt-3 text-zinc-500">
-              Notre IA évalue chaque aspect de votre discours pour maximiser votre impact.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-            {[
-              {
-                icon: Zap,
-                titre: 'Analyse en temps réel',
-                description:
-                  "Notre moteur IA traite votre discours en quelques secondes et génère une analyse structurée avec scores de persuasion et de clarté.",
-              },
-              {
-                icon: CheckCircle,
-                titre: 'Points forts identifiés',
-                description:
-                  "Comprenez immédiatement ce qui fonctionne : cohérence thématique, fluidité rhétorique, force des arguments, registre de langue.",
-              },
-              {
-                icon: Shield,
-                titre: 'Reformulation intelligente',
-                description:
-                  "Obtenez une proposition de reformulation optimisée pour amplifier l'impact de votre message tout en préservant votre intention.",
-              },
-            ].map((feature) => (
-              <div key={feature.titre} className="rounded-xl bg-white p-6 shadow-sm border border-zinc-100">
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100">
-                  <feature.icon className="h-5 w-5 text-zinc-700" />
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-400 mb-8">
+            Conçu pour la recherche, l&apos;expertise et la décision
+          </p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {PUBLICS.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2 rounded-xl bg-white border border-slate-100 p-4 text-center shadow-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
+                  <Icon className="h-4.5 w-4.5 text-blue-600 h-5 w-5" />
                 </div>
-                <h3 className="mb-2 font-semibold text-zinc-900">{feature.titre}</h3>
-                <p className="text-sm text-zinc-500 leading-relaxed">{feature.description}</p>
+                <span className="text-xs font-medium text-slate-700 leading-snug">{label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Tarifs */}
-      <section id="tarifs" className="py-20 bg-white">
+      {/* ── Fonctionnalités ────────────────────────────────────── */}
+      <section id="fonctionnalites" className="py-24 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl font-bold text-zinc-900">Nos Forfaits</h2>
-            <p className="mt-3 text-zinc-500">
-              Choisissez le forfait adapté à vos besoins d&apos;analyse.
+          <div className="text-center mb-14">
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-3">
+              Approche hybride IA + SHS
+            </p>
+            <h2 className="text-3xl font-bold text-slate-900">
+              Interface entre complexité discursive<br className="hidden sm:block" />
+              et analyse institutionnelle
+            </h2>
+            <p className="mt-4 text-slate-500 max-w-xl mx-auto">
+              Idéoscope transforme des corpus complexes en rapports interprétatifs
+              exploitables pour la recherche et la prise de décision.
             </p>
           </div>
 
-          <div className="mx-auto grid max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2">
-            {/* Pack Simple */}
-            <div className="rounded-2xl border border-zinc-200 p-8">
-              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                Pack Simple
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+            {FONCTIONNALITES.map((f) => (
+              <div key={f.titre} className="rounded-2xl border border-slate-100 bg-slate-50 p-7 hover:shadow-md transition-shadow">
+                <div className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl ${f.couleur}`}>
+                  <f.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mb-3 font-semibold text-slate-900">{f.titre}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{f.description}</p>
               </div>
-              <div className="mt-2 text-4xl font-bold text-zinc-900">
-                {formaterPrix(prixSimple)}
-              </div>
-              <p className="mt-1 text-sm text-zinc-500">Paiement unique · Valable 1 mois</p>
-              <ul className="mt-6 space-y-3 text-sm text-zinc-700">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-zinc-400 shrink-0" />
-                  {quotaSimple} discours analysés
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-zinc-400 shrink-0" />
-                  Analyse IA complète
-                </li>
-                <li className="flex items-center gap-2 text-zinc-400">
-                  <CheckCircle className="h-4 w-4 shrink-0" />
-                  Reformulation non incluse
-                </li>
-              </ul>
-              <Link
-                href="/inscription"
-                className="mt-8 flex items-center justify-center rounded-lg border border-zinc-200 py-3 text-sm font-medium text-zinc-900 hover:bg-zinc-50 transition-colors"
-              >
-                Choisir ce plan
-              </Link>
-            </div>
+            ))}
+          </div>
 
-            {/* Pack Premium */}
-            <div className="relative rounded-2xl border-2 border-zinc-900 bg-zinc-950 p-8 text-white">
-              <div className="absolute -top-3 right-6 rounded-full bg-zinc-900 px-3 py-1 text-xs font-semibold border border-zinc-700 text-zinc-300">
-                Recommandé
-              </div>
-              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Pack Premium
-              </div>
-              <div className="mt-2 text-4xl font-bold text-white">
-                {formaterPrix(prixPremium)}
-              </div>
-              <p className="mt-1 text-sm text-zinc-400">Paiement unique · Valable 3 mois</p>
-              <ul className="mt-6 space-y-3 text-sm text-zinc-300">
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-zinc-500 shrink-0" />
-                  {quotaPremium} discours analysés
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-zinc-500 shrink-0" />
-                  Analyse IA approfondie
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-zinc-500 shrink-0" />
-                  Reformulation incluse
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4 text-zinc-500 shrink-0" />
-                  Support prioritaire
-                </li>
-              </ul>
-              <Link
-                href="/inscription"
-                className="mt-8 flex items-center justify-center gap-2 rounded-lg bg-white py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
-              >
-                S&apos;abonner maintenant
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+          {/* Apports */}
+          <div className="mt-16 rounded-2xl bg-slate-900 p-8 text-white">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { titre: 'Texte → Discours',       desc: 'Passage de l\'analyse textuelle à l\'analyse discursive' },
+                { titre: 'Stratégies discursives',  desc: 'Identification des procédés rhétoriques et argumentatifs' },
+                { titre: 'Orientations idéolo.',    desc: 'Cartographie des positionnements et tensions idéologiques' },
+                { titre: 'Rapports exploitables',  desc: 'Exportables pour mémoires, thèses, articles ou projets' },
+              ].map((a) => (
+                <div key={a.titre} className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-sm">{a.titre}</p>
+                    <p className="mt-1 text-xs text-slate-400 leading-relaxed">{a.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA final */}
-      <section className="bg-zinc-950 py-16 text-white">
+      {/* ── Tarifs ─────────────────────────────────────────────── */}
+      <section id="tarifs" className="py-24 bg-slate-50">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-600 mb-3">
+              Accès à la plateforme
+            </p>
+            <h2 className="text-3xl font-bold text-slate-900">Forfaits d&apos;analyse</h2>
+            <p className="mt-3 text-slate-500">
+              Choisissez le volume d&apos;analyse adapté à votre projet de recherche.
+            </p>
+          </div>
+
+          <div className="mx-auto grid max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2">
+            {/* Pack Essentiel */}
+            <div className="rounded-2xl border border-slate-200 bg-white p-8">
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Accès Essentiel
+              </div>
+              <div className="mt-2 text-4xl font-bold text-slate-900">
+                {formaterPrix(prixSimple)}
+              </div>
+              <p className="mt-1 text-sm text-slate-500">Paiement unique · Valable 1 mois</p>
+              <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                  {quotaSimple} corpus analysés
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                  Analyse discursive complète
+                </li>
+                <li className="flex items-center gap-2 text-slate-400">
+                  <CheckCircle className="h-4 w-4 shrink-0" />
+                  Reformulation non incluse
+                </li>
+              </ul>
+              <LinkBouton
+                href="/inscription"
+                variante="contour"
+                taille="lg"
+                pleineLargeur
+                className="mt-8 rounded-xl"
+              >
+                Choisir ce forfait
+              </LinkBouton>
+            </div>
+
+            {/* Pack Recherche */}
+            <div className="relative rounded-2xl border-2 border-blue-600 bg-blue-600 p-8 text-white">
+              <div className="absolute -top-3 right-6 rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-white">
+                Recommandé
+              </div>
+              <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-blue-200">
+                Accès Recherche
+              </div>
+              <div className="mt-2 text-4xl font-bold text-white">
+                {formaterPrix(prixPremium)}
+              </div>
+              <p className="mt-1 text-sm text-blue-200">Paiement unique · Valable 3 mois</p>
+              <ul className="mt-6 space-y-3 text-sm text-blue-100">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-200 shrink-0" />
+                  {quotaPremium} corpus analysés
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-200 shrink-0" />
+                  Analyse discursive approfondie
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-200 shrink-0" />
+                  Reformulation contextualisée incluse
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="h-4 w-4 text-blue-200 shrink-0" />
+                  Support prioritaire
+                </li>
+              </ul>
+              <LinkBouton
+                href="/inscription"
+                variante="secondaire"
+                taille="lg"
+                pleineLargeur
+                className="mt-8 rounded-xl font-semibold text-blue-700 hover:bg-blue-50"
+                iconDroite={<ArrowRight className="h-4 w-4" />}
+              >
+                Accéder à la recherche
+              </LinkBouton>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA final ──────────────────────────────────────────── */}
+      <section className="section-tarifs-navy py-20">
         <div className="mx-auto max-w-3xl px-4 text-center">
-          <h2 className="text-2xl font-bold">
-            Prêt à analyser votre prochain discours ?
+          <Image
+            src="/Logo_ideoscole_with_tagline.png"
+            alt="Idéoscope"
+            width={200}
+            height={60}
+            className="object-contain mx-auto mb-8"
+          />
+          <h2 className="text-2xl font-bold text-white">
+            Prêt à analyser votre prochain corpus ?
           </h2>
-          <p className="mt-4 text-zinc-400">
-            Rejoignez les professionnels de la politique qui font confiance à Politiqueia
-            pour affiner leur communication.
+          <p className="mt-4 text-slate-400 max-w-xl mx-auto">
+            Rejoignez universités, laboratoires et observatoires qui s&apos;appuient
+            sur Idéoscope pour transformer leurs corpus en rapports interprétatifs exploitables.
           </p>
-          <Link
+          <LinkBouton
             href="/inscription"
-            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 text-sm font-semibold text-zinc-900 hover:bg-zinc-100 transition-colors"
+            variante="primaire"
+            taille="lg"
+            className="mt-8 px-8 rounded-xl"
+            iconDroite={<ArrowRight className="h-4 w-4" />}
           >
-            Commencer gratuitement
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+            Démarrer l&apos;analyse
+          </LinkBouton>
         </div>
       </section>
     </div>
