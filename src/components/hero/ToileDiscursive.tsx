@@ -80,7 +80,7 @@ export default function ToileDiscursive() {
           const dy = noeuds[i].y - noeuds[j].y
           if (Math.sqrt(dx * dx + dy * dy) < w * 0.26 && Math.random() > 0.45) {
             const ta = noeuds[i].type, tb = noeuds[j].type
-            let couleur = C.bleu
+            let couleur: string = C.bleu
             if (ta === 'tension' || tb === 'tension') couleur = C.orange
             else if (ta === 'consensus' || tb === 'consensus') couleur = C.vert
             liens.push({ a: i, b: j, progress: Math.random(), speed: 0.0014 + Math.random() * 0.002, couleur, alpha: 0 })
