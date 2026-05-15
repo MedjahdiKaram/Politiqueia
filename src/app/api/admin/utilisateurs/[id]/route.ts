@@ -39,6 +39,42 @@ export async function GET(_: NextRequest, { params }: PropsRoute) {
   return NextResponse.json({ data })
 }
 
+// DELETE /api/admin/utilisateurs/[id] – Supprimer l'utilisateur et toutes ses données
+export async function DELETE(_: NextRequest, { params }: PropsRoute) {
+  const supabase      = await creerClientServeur()
+  const supabaseAdmin = await creerClientAdmin()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ erreur: 'Non authentifié' }, { status: 401 })
+
+  const { data: profil } = await supabaseAdmin
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single<{ role: string }>()
+
+  if (profil?.role !== 'admin') {
+    return NextResponse.json({ erreur: 'Accès interdit.' }, { status: 403 })
+  }
+
+  // Interdit de se supprimer soi-même
+  if (params.id === user.id) {
+    return NextResponse.json({ erreur: 'Impossible de supprimer votre propre compte.' }, { status: 400 })
+  }
+
+  // 1. Supprimer les discours
+  await supabaseAdmin.from('discours').delete().eq('user_id', params.id)
+  // 2. Supprimer les abonnements
+  await supabaseAdmin.from('abonnements').delete().eq('user_id', params.id)
+  // 3. Supprimer le profil
+  await supabaseAdmin.from('profiles').delete().eq('id', params.id)
+  // 4. Supprimer l'utilisateur auth (clé service role requise)
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(params.id)
+
+  if (error) return NextResponse.json({ erreur: error.message }, { status: 500 })
+
+  return NextResponse.json({ message: 'Utilisateur supprimé.' })
+}
+
 // PATCH /api/admin/utilisateurs/[id] – Activer/désactiver ou changer le rôle
 export async function PATCH(requete: NextRequest, { params }: PropsRoute) {
   const supabase      = await creerClientServeur()
